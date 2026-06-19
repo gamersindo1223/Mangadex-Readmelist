@@ -1,0 +1,6 @@
+name = "mangadex-cover-worker"
+main = "worker.js"
+compatibility_date = "2026-06-19"
+
+[observability]
+enabled = true

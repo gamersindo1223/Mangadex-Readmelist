@@ -1,0 +1,228 @@
+name: "MangaDex ReadmeList"
+author: "gamersindo1223"
+description: "Puts your MangaDex reading status lists into your README"
+
+inputs:
+  md_client_id:
+    description: "MangaDex personal client id"
+    required: true
+  md_client_secret:
+    description: "MangaDex personal client secret"
+    required: true
+  md_refresh_token:
+    description: "MangaDex refresh token"
+    required: true
+  gh_token:
+    description: "GitHub token used to commit README changes"
+    default: ""
+    required: true
+  gh_pat:
+    description: "Optional GitHub PAT with Secrets read/write permission. Required only when rotate_secret is true."
+    default: ""
+    required: false
+  repo_path:
+    description: "Repository to update, for example username/username"
+    default: ""
+    required: false
+  repo_branch:
+    description: "Branch to update"
+    default: ""
+    required: false
+  repo_filename:
+    description: "Markdown file to update"
+    default: "README.md"
+    required: false
+  display_limit:
+    description: "Maximum manga shown per marker block"
+    default: "10"
+    required: false
+  sort_by:
+    description: "Sort field: latestUploadedChapter, updatedAt, createdAt, title, followedCount, year"
+    default: "latestUploadedChapter"
+    required: false
+  sort_order:
+    description: "Sort order: asc or desc"
+    default: "desc"
+    required: false
+  title_language:
+    description: "Preferred title language code"
+    default: "en"
+    required: false
+  fallback_title_language:
+    description: "Fallback title language code"
+    default: "ja-ro"
+    required: false
+  content_ratings:
+    description: "Comma-separated MangaDex content ratings to include"
+    default: "safe,suggestive,erotica"
+    required: false
+  cover_url_format:
+    description: "Cover image URL template. Supports ${mangaId} and ${coverFileName}."
+    default: "https://uploads.mangadex.org/covers/${mangaId}/${coverFileName}.256.jpg"
+    required: false
+  cover_proxy_url:
+    description: "Optional proxy prefix for cover images, for example https://cor.brtree.dpdns.org/"
+    default: ""
+    required: false
+  metadata_format:
+    description: "Optional metadata format for list/default items. Supports placeholders like ${status}, ${lastChapter}, ${lastRead}, ${progress}, ${year}. Empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_reading:
+    description: "Optional metadata format override for READING blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_plan_to_read:
+    description: "Optional metadata format override for PLAN_TO_READ blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_completed:
+    description: "Optional metadata format override for COMPLETED blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_on_hold:
+    description: "Optional metadata format override for ON_HOLD blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_dropped:
+    description: "Optional metadata format override for DROPPED blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  metadata_format_re_reading:
+    description: "Optional metadata format override for RE_READING blocks. Unset uses metadata_format; empty string hides metadata."
+    default: "__default__"
+    required: false
+  empty_message:
+    description: "Optional message for empty marker blocks. Supports ${status} and ${libraryStatus}. Empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_reading:
+    description: "Optional empty message override for READING blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_plan_to_read:
+    description: "Optional empty message override for PLAN_TO_READ blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_completed:
+    description: "Optional empty message override for COMPLETED blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_on_hold:
+    description: "Optional empty message override for ON_HOLD blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_dropped:
+    description: "Optional empty message override for DROPPED blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  empty_message_re_reading:
+    description: "Optional empty message override for RE_READING blocks. Unset uses empty_message; empty string hides the message."
+    default: "__default__"
+    required: false
+  rotate_secret:
+    description: "Whether to update the MD_REFRESH_TOKEN repository secret with the latest refresh token"
+    default: "false"
+    required: false
+  refresh_token_secret_name:
+    description: "Repository secret name to update when rotate_secret is true"
+    default: "MD_REFRESH_TOKEN"
+    required: false
+  commit_message:
+    description: "Commit message used when README changes"
+    default: "docs: update MangaDex readlist"
+    required: false
+  committer_name:
+    description: "Commit author name"
+    default: "github-actions[bot]"
+    required: false
+  committer_email:
+    description: "Commit author email"
+    default: "41898282+github-actions[bot]@users.noreply.github.com"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout target repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repo_path || github.repository }}
+        ref: ${{ inputs.repo_branch || github.ref_name }}
+        token: ${{ inputs.gh_token || github.token }}
+        path: mangadex-readlist-target
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Update README sections
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/src/index.js"
+      env:
+        INPUT_MD_CLIENT_ID: ${{ inputs.md_client_id }}
+        INPUT_MD_CLIENT_SECRET: ${{ inputs.md_client_secret }}
+        INPUT_MD_REFRESH_TOKEN: ${{ inputs.md_refresh_token }}
+        INPUT_REPO_FILENAME: ${{ inputs.repo_filename }}
+        INPUT_DISPLAY_LIMIT: ${{ inputs.display_limit }}
+        INPUT_SORT_BY: ${{ inputs.sort_by }}
+        INPUT_SORT_ORDER: ${{ inputs.sort_order }}
+        INPUT_TITLE_LANGUAGE: ${{ inputs.title_language }}
+        INPUT_FALLBACK_TITLE_LANGUAGE: ${{ inputs.fallback_title_language }}
+        INPUT_CONTENT_RATINGS: ${{ inputs.content_ratings }}
+        INPUT_COVER_URL_FORMAT: ${{ inputs.cover_url_format }}
+        INPUT_COVER_PROXY_URL: ${{ inputs.cover_proxy_url }}
+        INPUT_METADATA_FORMAT: ${{ inputs.metadata_format }}
+        INPUT_METADATA_FORMAT_READING: ${{ inputs.metadata_format_reading }}
+        INPUT_METADATA_FORMAT_PLAN_TO_READ: ${{ inputs.metadata_format_plan_to_read }}
+        INPUT_METADATA_FORMAT_COMPLETED: ${{ inputs.metadata_format_completed }}
+        INPUT_METADATA_FORMAT_ON_HOLD: ${{ inputs.metadata_format_on_hold }}
+        INPUT_METADATA_FORMAT_DROPPED: ${{ inputs.metadata_format_dropped }}
+        INPUT_METADATA_FORMAT_RE_READING: ${{ inputs.metadata_format_re_reading }}
+        INPUT_EMPTY_MESSAGE: ${{ inputs.empty_message }}
+        INPUT_EMPTY_MESSAGE_READING: ${{ inputs.empty_message_reading }}
+        INPUT_EMPTY_MESSAGE_PLAN_TO_READ: ${{ inputs.empty_message_plan_to_read }}
+        INPUT_EMPTY_MESSAGE_COMPLETED: ${{ inputs.empty_message_completed }}
+        INPUT_EMPTY_MESSAGE_ON_HOLD: ${{ inputs.empty_message_on_hold }}
+        INPUT_EMPTY_MESSAGE_DROPPED: ${{ inputs.empty_message_dropped }}
+        INPUT_EMPTY_MESSAGE_RE_READING: ${{ inputs.empty_message_re_reading }}
+        TARGET_REPOSITORY_DIR: ${{ github.workspace }}/mangadex-readlist-target
+
+    - name: Save rotated MangaDex refresh token
+      if: ${{ inputs.rotate_secret == 'true' }}
+      shell: bash
+      working-directory: mangadex-readlist-target
+      env:
+        GH_TOKEN: ${{ inputs.gh_pat }}
+        SECRET_NAME: ${{ inputs.refresh_token_secret_name }}
+        REPO_PATH: ${{ inputs.repo_path || github.repository }}
+      run: |
+        if [ -z "$NEW_MD_REFRESH_TOKEN" ]; then
+          echo "No rotated MangaDex refresh token was returned."
+          exit 0
+        fi
+        if [ -z "$GH_TOKEN" ]; then
+          echo "::error::rotate_secret is true, but gh_pat was not provided."
+          exit 1
+        fi
+        gh secret set "$SECRET_NAME" --body "$NEW_MD_REFRESH_TOKEN" --repo "$REPO_PATH"
+
+    - name: Commit README changes
+      shell: bash
+      working-directory: mangadex-readlist-target
+      env:
+        COMMIT_MESSAGE: ${{ inputs.commit_message }}
+        COMMITTER_NAME: ${{ inputs.committer_name }}
+        COMMITTER_EMAIL: ${{ inputs.committer_email }}
+      run: |
+        if git diff --quiet -- "${{ inputs.repo_filename }}"; then
+          echo "No README changes detected."
+          exit 0
+        fi
+
+        git config user.name "$COMMITTER_NAME"
+        git config user.email "$COMMITTER_EMAIL"
+        git add "${{ inputs.repo_filename }}"
+        git commit -m "$COMMIT_MESSAGE"
+        git push

@@ -1,0 +1,32 @@
+node_modules/
+mangadex-image-auth-proxy/
+.env
+.env.*
+!.env.example
+*.env.local
+test/.env
+test/fixtures/.env
+test/fixtures/output/
+test/fixtures/*.generated.md
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local caches and build output
+.cache/
+.parcel-cache/
+dist/
+coverage/
+
+# Cloudflare Workers / Wrangler local state
+.wrangler/
+.dev.vars
+.mf/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

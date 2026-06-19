@@ -1,0 +1,26 @@
+{
+  "name": "mangadex-readlist",
+  "version": "1.0.0",
+  "description": "GitHub Action that writes MangaDex library statuses into a README.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test",
+    "render:fixture": "node scripts/render-fixture.js",
+    "token:access": "node scripts/get-access-token.js",
+    "diagnose:network": "node scripts/diagnose-network.js"
+  },
+  "keywords": [
+    "github-action",
+    "mangadex",
+    "readme"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "undici": "^6.27.0"
+  }
+}
