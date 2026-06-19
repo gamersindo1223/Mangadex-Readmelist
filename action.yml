@@ -157,6 +157,11 @@ runs:
       with:
         node-version: 20
 
+    - name: Install action dependencies
+      shell: bash
+      run: npm ci
+      working-directory: ${{ github.action_path }}
+
     - name: Update README sections
       shell: bash
       run: node "$GITHUB_ACTION_PATH/src/index.js"
