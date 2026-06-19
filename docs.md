@@ -302,7 +302,19 @@ jobs:
 
 ## Token Setup
 
-Use `web/index.html` for the browser setup wizard. It uses a CORS proxy based on [gamersindo1223/cors](https://github.com/gamersindo1223/cors).
+Use the browser setup wizard:
+
+```text
+http://setup.brtree.dpdns.org/web/
+```
+
+For local use, open:
+
+```text
+web/index.html
+```
+
+It uses a CORS proxy based on [gamersindo1223/cors](https://github.com/gamersindo1223/cors).
 
 The proxy must preserve:
 

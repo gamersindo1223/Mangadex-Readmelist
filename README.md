@@ -60,7 +60,15 @@ Add one or more marker blocks to the README or markdown file you want this actio
 
 ### Step 3. Open the setup wizard
 
-Open the plain HTML setup wizard:
+Open the plain HTML setup wizard.
+
+Simple setup:
+
+```text
+http://setup.brtree.dpdns.org/web/
+```
+
+Local file:
 
 ```text
 web/index.html
